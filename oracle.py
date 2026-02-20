@@ -1,7 +1,8 @@
 import time
 import sys
 import threading
-import winsound
+
+_seed = int(time.time_ns()) & 0xffffffff
 
 class Future:
     def __init__(self):
@@ -73,9 +74,6 @@ def sleep(loop, delay):
     threading.Thread(target=timer, daemon=True).start()
     return f
 
-
-_seed = int(time.time_ns()) & 0xffffffff
-
 def templeos_random():
     global _seed
     t = time.time_ns() & 0xffffffff
@@ -90,12 +88,6 @@ def templeos_choice(seq):
     return seq[templeos_random() % len(seq)]
 
 
-def templeos_beep():
-    freq = 200 + templeos_random() % 1800
-    dur = 20 + templeos_random() % 80
-    threading.Thread(target=winsound.Beep, args=(freq, dur), daemon=True).start()
-
-
 async def typewriter(loop, text, delay):
     in_word = False
     for ch in text:
@@ -104,7 +96,6 @@ async def typewriter(loop, text, delay):
 
         if ch.isalnum():
             if not in_word:
-                templeos_beep()
                 in_word = True
         else:
             in_word = False
